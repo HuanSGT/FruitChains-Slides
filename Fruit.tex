@@ -1,0 +1,530 @@
+\def\pgfsysdriver{pgfsys-dvipdfm.def}
+\documentclass{beamer}
+
+%\usetheme{Berkeley}
+\usetheme{Warsaw}
+
+%\useoutertheme{infolines}
+
+\setbeamertemplate{headline}
+{%
+%  \leavevmode%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex]{section in head/foot}%
+%    \hbox to .5\paperwidth{\hfil\insertsectionhead\hfil}
+%  \end{beamercolorbox}%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex]{subsection in head/foot}%
+%    \hbox to .5\paperwidth{\hfil\insertsubsectionhead\hfil}
+%  \end{beamercolorbox}%
+}
+
+
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{indentfirst}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{pgfpages}
+\usepackage{amsmath}
+
+\usefonttheme[onlymath]{serif}
+
+%\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen=right}
+%\setbeamertemplate{note page}[plain]
+%\setbeamertemplate{note page}{\insertnote}
+
+%\setbeamertemplate{footline}{}
+\setbeamertemplate{navigation symbols}{}
+
+%\setmainfont{Open Sans}
+\setsansfont{Open Sans}
+
+%\setbeamerfont{framesubtitle}{size={\fontsize{11}{11}}}
+\setbeamerfont{note page}{
+	family=\fontspec{WenQuanYi Micro Hei},
+	size={\fontsize{12}{14}}
+}
+\setbeamerfont{date}{
+	family=\fontspec{WenQuanYi Micro Hei}
+	%size={\fontsize{50}{50}}
+}
+\setbeamerfont{block title}{
+	family=\fontspec{Open Sans},
+	size={\fontsize{8}{8}}
+}
+\setbeamerfont{block body}{
+	family=\fontspec{Open Sans},
+	size={\fontsize{8}{8}}
+}
+
+\graphicspath{{figs/}}
+
+\newcommand{\insfig}[2][1]{
+	\begin{figure}
+		\includegraphics[width=#1\textwidth]{#2.pdf}
+	\end{figure}
+}
+
+\newcommand{\insblk}[2]{
+	\begin{block}{#1}
+		\insfig{#2}
+	\end{block}
+}
+
+\newcommand{\nak}{\big(\Pi_{Nak}, {\rm extract}_{Nak}\big)}
+\newcommand{\frt}{\big(\Pi_{fruit}, {\rm extract}_{fruit}\big)}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{FruitChains: A Fair Blockchain}
+
+\author{Rafael Pass\inst{1} \and Elaine Shi\inst{2}}
+
+\date{
+\\ \quad \\ Speaker:\quad
+李\,寰 \vspace{-25pt}
+}
+
+\institute[Cornell University] % (optional, but mostly needed)
+{
+  \inst{1}%
+  Department of Computer Science\\
+  Cornell Tech
+  \and
+  \inst{2}%
+  Department of Computer Science\\
+  Cornell University
+}
+
+\begin{document}
+\begin{spacing}{1.2}
+
+\frame{\titlepage}
+\note{
+	\vspace{70pt}
+	\Huge{\centerline{\LaTeX}}
+}
+
+%\frame{\titlepage}
+
+\begin{frame}
+	\frametitle{Selfish Mining}
+	\begin{block}{Fairness}
+		Players controlling a $\phi$ fraction of computational power reap a fraction $\phi$ of the blocks.
+	\end{block}
+	\begin{block}{Block withholding attack on Nakamoto's protocol}
+		\begin{itemize}
+			\item An adversary $A$ controls the delivery of messages of the network
+			\item $A$ delays some messages from honest player, so that 
+it can use blocks mined by $A$ to replace blocks mined by honest players.
+			%all other players receive the adversarial block before the honest block
+		\end{itemize}
+		%If an adversary $A$ controls the delivery of messages of the network, it can, by delaying some messages, use a block mined by $A$ to replace a block mined by some honest player. Therefore erase the honest block.
+		%If the adversary controls the delivery of messages, it can replace an honest player's block with its own block by ensuring that all honest players receive the adversarial block before the honest block.
+	\end{block}
+	\begin{block}{Chain quality of Nakamoto's protocol}
+		\insfig{BWA}
+	\end{block}
+\end{frame}
+\note{
+当一个对手$A$掌握了整个网络的消息传递，\\
+他可以通过延迟消息的传递，使得他能用自己挖出来的\\
+恶意的区块代替诚实的玩家玩出来的诚实的区块。\\
+从而相当于把诚实的玩家的区块删除掉了。
+}
+
+\begin{frame}
+	\frametitle{Blockchain Protocols $\big(\Pi, {\rm extract}\big)$}
+	\vspace{-3pt}
+	\begin{block}{Algorithm $\Pi$}
+		\begin{itemize}
+			\item Receives messages and mines blocks
+			\item Maintains a local chain
+		\end{itemize}
+	\end{block}
+	\begin{block}{Algorithm ${\rm extract}(chain)$}
+		\begin{itemize}
+			\item Outputs an \textit{ordered} sequence of records, or batches, $\vec{m}$ 
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{Environment $Z$}
+		\begin{itemize}
+			\item Sends a message (a record) $m$ to each honest player in each round $r$
+			\item \textit{Corrupt} or \textit{uncorrupt} some players at any point
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{Attacker $A$}
+		\begin{itemize}
+			\item Delivers all messages sent by players
+			\item Cannot modify the content of messages broadcast by honest players
+			\item But may \textit{delay or reorder the delivery of a message} as long as it eventually delivers all messages.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{The Random Oracle in Blockchain Protocols}
+	\vspace{-5pt}
+	\begin{block}{The ROM}
+		A random function $H : \{0, 1\}^* \rightarrow \{0, 1\}^*$ with two oracles:
+		\begin{itemize}
+			\item ${\rm H}(x) = H(x)$,
+			\item ${\rm H.ver}(x,y)	 =
+				\begin{cases}
+					1, & H(x) = y\\
+					0, & {\rm otherwise}
+				\end{cases}$.
+	   \end{itemize}
+	\end{block}
+	\vspace{10pt}
+	\begin{block}{Access to ${\rm H}$}
+		In any round $r$,
+		\begin{itemize}
+			\item an honest player can make only a \textit{single} query to ${\rm H}$, and
+			\item an adversary $A$ controlling $q$ parties, can make $q$ \textit{sequential} queries to ${\rm H}$.
+		\end{itemize}
+	\end{block}
+	\vspace{10pt}
+	\begin{block}{Access to ${\rm H.ver}$}
+		In any round $r$, honest players (as well as $A$) may make \textit{any} number of queries to ${\rm H.ver}$.
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Nakamoto's Protocol $\nak$}
+	\framesubtitle{Notation}
+	\only<1-1>{\begin{block}{A block $(h_{-1}, \eta, m, h)$}
+		\begin{itemize}
+			\item $h_{-1}$: a pointer to the previous record
+			\item $\eta$: a nonce
+			\item $m$: a message (a transaction)
+			\item $h$: a pointer to the current block
+		\end{itemize}
+	\end{block}
+	\vspace{10pt}
+	\begin{block}{Hardness parameter $p$}
+		\begin{itemize}
+			\item $D_p = p\cdot 2^\kappa$
+			\item $\forall (h,b)$, ${\rm Pr}[H(h, \eta, b) < D_p] = p$
+		\end{itemize}
+	\end{block}
+	}
+	%\begin{block}{Validness of blocks and chains}
+%		A block $b = (h_{-1}, \eta, m, h)$ is valid w.r.t. (a predecessor block) $b_{-1} = (h_{-1}', \eta', m', h')$ if
+%		\begin{itemize}
+%			\item $h_{-1} = h'$
+%			\item ${\rm H.ver}\big((h_{-1}, \eta, m), h\big) = 1$
+%			\item $h < D_p = p \cdot 2^{\kappa}$
+%		\end{itemize}
+%		A sequence of blocks $chain = (b_0, \dots, b_l)$ is valid if
+%		\begin{itemize}
+%			\item $h_{-1} = h'$
+%			\item ${\rm H.ver}\big((h_{-1}, \eta, m), h\big) = 1$
+%			\item $h < D_p = p \cdot 2^{\kappa}$
+%		\end{itemize}
+%	\end{block}
+	\only<2-2>{\begin{block}{Validness of block $b = (h_{-1}, \eta, m, h)$ w.r.t. block $b_{-1} = (h_{-1}', \eta', m', h')$}
+		\begin{itemize}
+			\item $h_{-1} = h'$
+			\item ${\rm H.ver}\big((h_{-1}, \eta, m), h\big) = 1$
+			\item $h < D_p = p \cdot 2^{\kappa}$
+		\end{itemize}
+	\end{block}
+	\vspace{10pt}
+	\begin{block}{Validness of blockchain $(b_0, \dots, b_l)$}
+		\begin{itemize}
+			\item $b_0 = \big(0, 0, \bot, H(0, 0, \bot)\big)$ is the genesis block
+			\item $\forall 1 \leq i \leq l$, $b_i$ is valid w.r.t. $b_{i-1}$
+		\end{itemize}
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Nakamoto's Protocol $\nak$}
+	\framesubtitle{Execution}
+	\vspace{-5pt}
+	\begin{block}{\center {\large $\Pi_{Nak}$}}
+		\insfig{NPE1}
+	\end{block}
+	\vspace{10pt}
+	\begin{block}{\center {\large ${\rm extract}_{Nak}$}}
+		On input a valid chain $chain$, output the sequence of messages $m$ contained in blocks in $chain$.
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{The FruitChain Protocol $\frt$}
+	\framesubtitle{Overview}
+	\vspace{-7pt}
+	\begin{block}{Based on Nakamoto’s blockchain protocol}
+		\begin{itemize}
+			\item Records are stored in fruits instead of blocks
+			\item (Recency of fruits) A Fruit is required to hang from a block not too far from the block recording it
+		\end{itemize}
+	\end{block}
+	\vspace{-3pt}
+	\begin{block}{Fruit mining}
+		\begin{itemize}
+			\item Fruits themselves requires solving some proof of work, with a \textit{different hardness parameter} $p_f$
+			\item In each round, honest players simultaneously mine for a fruit and a block by making one invokation of the hash function
+			\item 2-for-1 trick: the prefix and suffix of $H$'s output for block and fruit mining.% resp.%, respectively
+		\end{itemize}
+	\end{block}
+	\vspace{-3pt}
+	\begin{block}{In execution}
+		\begin{itemize}
+			\item Whenever a player mines a fruit, it broadcasts it to all other players
+			\item Fruits that have not yet been recorded in the blockchain (and that are still recent) are stored in a buffer and all honest players next attempt to add them to the blockchain
+		\end{itemize}
+	\end{block}
+	%\begin{itemize}
+	%	\item Running an instance of Nakamoto’s blockchain protocol, but instead of directly storing the records m inside the blockchain, the records are put inside ``fruit'' $f$
+	%	\item We require the fruits to ``hang'' from a block in the chain which is not too “far” from the block which records the fruit
+	%	\item These fruits themselves requires solving some proof of work, with a \textit{different hardness parameter} $p_f$
+	%	\item In each round, honest players simultaneously mine for a fruit and a block
+	%	\item Whenever a player successfully mines a fruit it broadcasts it to all other players
+	%\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{The FruitChain Protocol $\frt$}
+	\framesubtitle{Notation}
+	\only<1-1>{
+		\insblk{Random oracle $H$ and hash function $d$}{FPN1}
+		%\insfig{FPN1}
+		\vspace{15pt}
+		\insblk{Hardness parameters $p$, $p_f$\ \ and recency parameter $R$}{FPN2}
+		%\insfig{FPN2}
+	}
+	\only<2-2>{
+		\begin{block}{Validness of fruits, blocks and chains}
+			%\vspace{-5pt}
+			%\insblk{V}{FPN3}
+			\insfig{FPN3}
+			\vspace{-20pt}
+			%\insblk{V}{FPN4}
+			\insfig{FPN4}
+			\vspace{-20pt}
+			%\insblk{V}{FPN5}
+			\insfig{FPN5}
+		\end{block}
+		\vspace{5pt}
+		\insblk{Recency of fruits w.r.t. $chain$}{FPN6}
+	}
+\end{frame}
+
+\begin{frame}
+	\frametitle{The FruitChain Protocol $\frt$}
+	\framesubtitle{Execution}
+	%\framesubtitle{Notation}
+	\only<1-1>{
+		\vspace{-5pt}
+		\begin{block}{\center {\large $\Pi_{fruit}$}}
+			\insfig[0.95]{FP1}
+		\end{block}
+	}
+	\only<2-2>{
+		\begin{block}{\center {\large ${\rm extract}_{fruit}$}}
+			\insfig{FP2}
+		\end{block}
+	}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Security of Blockchain Protocols}
+	\framesubtitle{(With Overwhelming Probability)}
+	\vspace{-2.5pt}
+	\begin{block}{$T_0$-consistency}
+		At any point, the chains of two honest players can differ only in the last $T_0$ blocks.
+	\end{block}
+	
+	\begin{block}{Chain growth rate $T_0$, $g_0$, $g_1$}
+		At any point, the chain of honest players grows by
+		\begin{itemize}
+			\item at least $T_0$ messages in the next $\frac{T_0}{g_0}$ rounds, and
+			\item at most  $T_0$ messages in the next $\frac{T_0}{g_1}$ rounds.
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{Chain quality $T_0$, $\mu$}
+		For any $T_0$ consecutive messages in any chain held by some honest player, the fraction of messages that were contributed by honest players is at least $\mu$.
+	\end{block}
+	
+	\begin{block}{Fairness $T_0$, $\delta$\ \ w.r.t. $\rho$ attackers \ \,$\big(\Rightarrow$ chain quality $T_0, (1-\delta)(1-\rho) \big)$}
+		Any $\phi \leq 1 - \rho$ fraction coalition of honest users is guaranteed to get at least a $(1-\delta)\phi$ fraction of the blocks in every $T_0$-long window.\\
+		This condition implies chain quality $T_0, (1-\delta)(1-\rho)$ by considering $\phi = 1 - \rho$.
+	%\vspace{-10pt}
+	%\insfig{F4}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Security of Nakamoto and FruitChain}
+	%\vspace{-6pt}
+	\insfig[0.95]{SoB1}
+	\vspace{-11pt}
+	\insfig[0.95]{SoB2}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Proof Overview}
+	%\insblk{Preventing block withholding attack}{PO1}
+	\begin{block}{Preventing block/fruit withholding attack}
+		\begin{itemize}
+		\item Messages are stored in fruits instead of blocks
+		\item Once a fruit $f$ is mined, it's broadcast to all other players; other players will try to mine a block and include $f$ in it
+		\item By the chain growth and chain quality (of Nakamoto), such an block arrives soon enough, so that $f$ is still recent
+		\item As long as $f$ is valid, other player will be accepted by other honest players; it can't be replaced (erased)
+		\end{itemize}
+	\end{block}
+	%\vspace{10pt}
+	%\insblk{Preventing fruit withholding attack}{PO2}
+	\begin{block}{Preventing attackers from releasing lots of fruits at a time}
+		\begin{itemize}
+			\item Which creates a very high fraction of adversarial fruit in some segment of the chain
+			\item By requiring the fruits to be recent, and by chain growth (of Nakamoto), the attacker can't wait too long to release fruits, otherwise they'll expire
+		\end{itemize} 
+	\end{block}
+\end{frame}
+\note{
+	{\color{blue}
+	预防 block withholding attack\\
+	
+	延迟 block 没用，消息存在水果里面\\
+	
+	水果一旦挖出来，会马上广播给其他玩家；其他玩家 --- \\
+	会尝试把水果加入他们的 block\\
+
+	由链增长和链质量的性质，其他诚实的玩家会在 ---\\
+	足够短的时间内挖出一个新的块，且这时候水果仍是recent\\
+	}
+	
+	{\color{red}
+	\ \ 预防 fruit withholding attack\\
+	
+	\ \ 不管延迟多久，只要合法的水果，玩家就会接受\\
+	
+	}
+}
+
+\begin{frame}
+	\frametitle{An Application}
+	\vspace{-5pt}
+	\begin{block}{Reasons for mining pools}
+		\begin{itemize}
+			\item In Bitcoin, the mining hardness is set so that the world finds a new block every 10 minutes, to ensure consistency
+			\item It takes a very long time for an individual miner to mine a block
+			\item The payments received by miners has a very high variance
+		\end{itemize}
+	\end{block}
+	\vspace{-3pt}
+	\begin{block}{How mining pools work}
+		\begin{itemize}
+			\item Miners come together to pool their work and share the reward
+			\item To prevent free-riding, miners submit partial proofs of work
+			\item Rewards are distributed among the contributor of the partial proofs-of-work
+			\item Centralization
+		\end{itemize}
+	\end{block}
+	\vspace{-3pt}
+	\begin{block}{Preventing mining pools in FruitChains}
+		\begin{itemize}
+			\item Set $p$ appropriately to ensure consistency
+			\item Set $p_f$ larger, and as large as the probability to find a partial proof-of-work
+			\item Reduce the variance in a \textit{fully decentralized} way
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	%\Huge{\centerline{The End}}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+	\frametitle{$\alpha$, $\beta$, $\gamma$ \ and \ $\Gamma_\lambda^p$}
+	\insblk{Parameters $\alpha$, $\beta$, $\gamma$ that parameterize security of blockchain}{Para1}
+	\vspace{20pt}
+	\insblk{Predicate $\Gamma_\lambda^p$}{Para2}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Consistency}
+	\insblk{${\rm consistent}^T({\rm view})$}{C1}
+	\begin{block}{$T_0(\cdot)$-consistency in $\Gamma$ environments}
+		\insfig[0.95]{C2}
+	\end{block}
+	\insblk{Consequence of $T$-consistency}{c3}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Chain Growth}
+	\vspace{-5pt}
+	\insfig[0.7]{CG1}
+	\vspace{-10pt}
+	\insfig[0.95]{CG2}
+	\vspace{-10pt}
+	\insblk{Chain growth rate $T_0(\cdot)$, $g0(\cdot, \cdot, \cdot, \cdot)$, $g_1(\cdot, \cdot, \cdot, \cdot)$ in $\Gamma$-environments}{CG3}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Chain Quality}
+	\insblk{Non-adversarial record $m$ w.r.t. view and prefix $\vec{m}$}{CQ1}
+	\insblk{${\rm quality}^T({\rm view},\mu)$}{CQ2}
+	\insblk{Chain quality $T_0(\cdot)$, $\mu(\cdot, \cdot, \cdot, \cdot)$ in $\Gamma$ environments}{CQ3}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Fairness}
+	\vspace{-3pt}
+	%\begin{block}{Subset selection}
+		\insfig{F1}
+		\vspace{-10pt}
+		\insfig{F2}
+	%\end{block}
+	\vspace{-7pt}
+	\insblk{Fairness $T_0(\cdot)$, $\delta$ in $\Gamma$ environments}{F3}
+	\vspace{-3pt}
+	\insfig{F4}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Blockchain Protocols}
+	\insblk{Blockchain protocols}{BP1}
+	\insblk{A blockchain execution}{BP2}
+\end{frame}
+
+\begin{frame}
+	\frametitle{A Blockchain execution}
+	\insfig{BP30}
+	\vspace{-20pt}
+	%\insfig{BP32}
+	\insfig{BP33}
+\end{frame}
+
+%\begin{frame}
+%	\frametitle{Random Oracle}
+%
+%\end{frame}
+
+%\begin{frame}
+%	\frametitle{Nakamoto’s Protocol}
+%	\only<1-1>{
+%		\insfig{NP3}
+%		\insfig{NP31}
+%		\insfig{NP32}
+%	}
+%\end{frame}
+
+\end{spacing}
+\end{document}
