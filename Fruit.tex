@@ -1,21 +1,9 @@
 \def\pgfsysdriver{pgfsys-dvipdfm.def}
 \documentclass{beamer}
 
-%\usetheme{Berkeley}
 \usetheme{Warsaw}
 
-%\useoutertheme{infolines}
-
-\setbeamertemplate{headline}
-{%
-%  \leavevmode%
-%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex]{section in head/foot}%
-%    \hbox to .5\paperwidth{\hfil\insertsectionhead\hfil}
-%  \end{beamercolorbox}%
-%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex]{subsection in head/foot}%
-%    \hbox to .5\paperwidth{\hfil\insertsubsectionhead\hfil}
-%  \end{beamercolorbox}%
-}
+\setbeamertemplate{headline}{}
 
 
 \usepackage{color}
@@ -29,29 +17,20 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{pgfpages}
-\usepackage{amsmath}
+\usepackage{amsmath}	
 
 \usefonttheme[onlymath]{serif}
 
-%\setbeameroption{show notes}
-%\setbeameroption{show notes on second screen=right}
-%\setbeamertemplate{note page}[plain]
-%\setbeamertemplate{note page}{\insertnote}
-
-%\setbeamertemplate{footline}{}
 \setbeamertemplate{navigation symbols}{}
 
-%\setmainfont{Open Sans}
 \setsansfont{Open Sans}
 
-%\setbeamerfont{framesubtitle}{size={\fontsize{11}{11}}}
 \setbeamerfont{note page}{
 	family=\fontspec{WenQuanYi Micro Hei},
 	size={\fontsize{12}{14}}
 }
 \setbeamerfont{date}{
 	family=\fontspec{WenQuanYi Micro Hei}
-	%size={\fontsize{50}{50}}
 }
 \setbeamerfont{block title}{
 	family=\fontspec{Open Sans},
@@ -123,21 +102,12 @@
 			\item An adversary $A$ controls the delivery of messages of the network
 			\item $A$ delays some messages from honest player, so that 
 it can use blocks mined by $A$ to replace blocks mined by honest players.
-			%all other players receive the adversarial block before the honest block
 		\end{itemize}
-		%If an adversary $A$ controls the delivery of messages of the network, it can, by delaying some messages, use a block mined by $A$ to replace a block mined by some honest player. Therefore erase the honest block.
-		%If the adversary controls the delivery of messages, it can replace an honest player's block with its own block by ensuring that all honest players receive the adversarial block before the honest block.
 	\end{block}
 	\begin{block}{Chain quality of Nakamoto's protocol}
 		\insfig{BWA}
 	\end{block}
 \end{frame}
-\note{
-当一个对手$A$掌握了整个网络的消息传递，\\
-他可以通过延迟消息的传递，使得他能用自己挖出来的\\
-恶意的区块代替诚实的玩家玩出来的诚实的区块。\\
-从而相当于把诚实的玩家的区块删除掉了。
-}
 
 \begin{frame}
 	\frametitle{Blockchain Protocols $\big(\Pi, {\rm extract}\big)$}
@@ -217,20 +187,7 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 		\end{itemize}
 	\end{block}
 	}
-	%\begin{block}{Validness of blocks and chains}
-%		A block $b = (h_{-1}, \eta, m, h)$ is valid w.r.t. (a predecessor block) $b_{-1} = (h_{-1}', \eta', m', h')$ if
-%		\begin{itemize}
-%			\item $h_{-1} = h'$
-%			\item ${\rm H.ver}\big((h_{-1}, \eta, m), h\big) = 1$
-%			\item $h < D_p = p \cdot 2^{\kappa}$
-%		\end{itemize}
-%		A sequence of blocks $chain = (b_0, \dots, b_l)$ is valid if
-%		\begin{itemize}
-%			\item $h_{-1} = h'$
-%			\item ${\rm H.ver}\big((h_{-1}, \eta, m), h\big) = 1$
-%			\item $h < D_p = p \cdot 2^{\kappa}$
-%		\end{itemize}
-%	\end{block}
+	
 	\only<2-2>{\begin{block}{Validness of block $b = (h_{-1}, \eta, m, h)$ w.r.t. block $b_{-1} = (h_{-1}', \eta', m', h')$}
 		\begin{itemize}
 			\item $h_{-1} = h'$
@@ -276,7 +233,7 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 		\begin{itemize}
 			\item Fruits themselves requires solving some proof of work, with a \textit{different hardness parameter} $p_f$
 			\item In each round, honest players simultaneously mine for a fruit and a block by making one invokation of the hash function
-			\item 2-for-1 trick: the prefix and suffix of $H$'s output for block and fruit mining.% resp.%, respectively
+			\item 2-for-1 trick: the prefix and suffix of $H$'s output for block and fruit mining.
 		\end{itemize}
 	\end{block}
 	\vspace{-3pt}
@@ -286,13 +243,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 			\item Fruits that have not yet been recorded in the blockchain (and that are still recent) are stored in a buffer and all honest players next attempt to add them to the blockchain
 		\end{itemize}
 	\end{block}
-	%\begin{itemize}
-	%	\item Running an instance of Nakamoto’s blockchain protocol, but instead of directly storing the records m inside the blockchain, the records are put inside ``fruit'' $f$
-	%	\item We require the fruits to ``hang'' from a block in the chain which is not too “far” from the block which records the fruit
-	%	\item These fruits themselves requires solving some proof of work, with a \textit{different hardness parameter} $p_f$
-	%	\item In each round, honest players simultaneously mine for a fruit and a block
-	%	\item Whenever a player successfully mines a fruit it broadcasts it to all other players
-	%\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -369,7 +319,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 
 \begin{frame}
 	\frametitle{Security of Nakamoto and FruitChain}
-	%\vspace{-6pt}
 	\insfig[0.95]{SoB1}
 	\vspace{-11pt}
 	\insfig[0.95]{SoB2}
@@ -377,7 +326,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 
 \begin{frame}
 	\frametitle{Proof Overview}
-	%\insblk{Preventing block withholding attack}{PO1}
 	\begin{block}{Preventing block/fruit withholding attack}
 		\begin{itemize}
 		\item Messages are stored in fruits instead of blocks
@@ -386,8 +334,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 		\item As long as $f$ is valid, other player will be accepted by other honest players; it can't be replaced (erased)
 		\end{itemize}
 	\end{block}
-	%\vspace{10pt}
-	%\insblk{Preventing fruit withholding attack}{PO2}
 	\begin{block}{Preventing attackers from releasing lots of fruits at a time}
 		\begin{itemize}
 			\item Which creates a very high fraction of adversarial fruit in some segment of the chain
@@ -395,26 +341,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 		\end{itemize} 
 	\end{block}
 \end{frame}
-\note{
-	{\color{blue}
-	预防 block withholding attack\\
-	
-	延迟 block 没用，消息存在水果里面\\
-	
-	水果一旦挖出来，会马上广播给其他玩家；其他玩家 --- \\
-	会尝试把水果加入他们的 block\\
-
-	由链增长和链质量的性质，其他诚实的玩家会在 ---\\
-	足够短的时间内挖出一个新的块，且这时候水果仍是recent\\
-	}
-	
-	{\color{red}
-	\ \ 预防 fruit withholding attack\\
-	
-	\ \ 不管延迟多久，只要合法的水果，玩家就会接受\\
-	
-	}
-}
 
 \begin{frame}
 	\frametitle{An Application}
@@ -511,20 +437,6 @@ it can use blocks mined by $A$ to replace blocks mined by honest players.
 	%\insfig{BP32}
 	\insfig{BP33}
 \end{frame}
-
-%\begin{frame}
-%	\frametitle{Random Oracle}
-%
-%\end{frame}
-
-%\begin{frame}
-%	\frametitle{Nakamoto’s Protocol}
-%	\only<1-1>{
-%		\insfig{NP3}
-%		\insfig{NP31}
-%		\insfig{NP32}
-%	}
-%\end{frame}
 
 \end{spacing}
 \end{document}
